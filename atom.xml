@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>honpery&#39;s note</title>
+  
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://honpery.com/"/>
+  <updated>2018-01-06T18:07:52.868Z</updated>
+  <id>https://honpery.com/</id>
+  
+  <author>
+    <name>honpery</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>优雅处理npm私有源并用问题</title>
+    <link href="https://honpery.com/2018/01/06/fe/npm-registry/"/>
+    <id>https://honpery.com/2018/01/06/fe/npm-registry/</id>
+    <published>2018-01-06T00:00:00.000Z</published>
+    <updated>2018-01-06T18:07:52.868Z</updated>
+    
+    <content type="html"><![CDATA[<p>本文阐述了如何优雅处理npm私有源和公有源并用的问题。</p><a id="more"></a><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>因涉及到业务相关的模块需要发布在内部npm上，其他依赖还是从npm上拉取，如何区分多个源的依赖是一个问题，下文找到了自认为优雅的解决方案。</p><p>核心原理是根据<a href="https://docs.npmjs.com/misc/scope" target="_blank" rel="noopener">scope</a>区分npm源，下文举例scope=sc。</p><p>下文假设Project MAIN依赖Project DEP。</p><h2 id="发布模块"><a href="#发布模块" class="headerlink" title="发布模块"></a>发布模块</h2><p>因为需要根据不同的scope判断npm源，需要为DEP的<code>package.json</code>添加以下字段。</p><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"@sc/demo"</span>,</span><br><span class="line">    <span class="attr">"publishConfig"</span>: &#123;</span><br><span class="line">        <span class="attr">"registry"</span>: <span class="string">"http://npm.sc.com"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>因为<code>yarn login</code>不支持<code>--registry</code>参数，所以发布的时候需要直接使用<code>npm publish</code>。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm login --registry http://npm.sc.com</span><br><span class="line">npm publish</span><br></pre></td></tr></table></figure><h2 id="安装模块"><a href="#安装模块" class="headerlink" title="安装模块"></a>安装模块</h2><p>在MAIN<strong>项目根目录</strong>创建<code>.yarnrc</code>和<code>.npmrc</code>配置文件，内容均为以下配置。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&quot;@sc:registry&quot; &quot;http://npm.sc.com&quot;</span><br></pre></td></tr></table></figure><p>配置后安装依赖方式照旧，注意包名中要有scope。</p><h2 id="开发模块"><a href="#开发模块" class="headerlink" title="开发模块"></a>开发模块</h2><p>如开发MAIN的时候需要修改调试DEP，可以使用<a href="https://docs.npmjs.com/cli/link" target="_blank" rel="noopener">npm link</a>。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># dep project root</span></span><br><span class="line">sudo npm link</span><br><span class="line"></span><br><span class="line"><span class="comment"># main project root</span></span><br><span class="line"><span class="comment"># npm link [dep package name]</span></span><br><span class="line">npm link @sc/demo</span><br><span class="line"></span><br><span class="line"><span class="comment"># 取消link</span></span><br><span class="line">npm unlink &amp;&amp; yarn</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;本文阐述了如何优雅处理npm私有源和公有源并用的问题。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="前端" scheme="https://honpery.com/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+    
+      <category term="前端 npm" scheme="https://honpery.com/tags/%E5%89%8D%E7%AB%AF-npm/"/>
+    
+  </entry>
+  
+</feed>
